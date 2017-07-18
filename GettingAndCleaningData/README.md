@@ -1,5 +1,7 @@
 # Getting and Cleaning Data Course Project
 
+The goal of this analysis is to clean and combine data collected from the sensors of a Samsung Smartphone into one tidy file instead of multiple files. 
+
 The program contain six functions (also documented in run_analysis.R):
 * getFiles()
 * getFilePaths() 
