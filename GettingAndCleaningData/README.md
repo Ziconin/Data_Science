@@ -1,4 +1,4 @@
-#Getting and Cleaning Data Course Project
+# Getting and Cleaning Data Course Project
 
 The program contain six functions (also documented in run_analysis.R):
 * getFiles()
@@ -8,7 +8,7 @@ The program contain six functions (also documented in run_analysis.R):
 * finalize()
 * main() 
 
-####getFiles()
+####getFiles() 
 Download and unzip the files, if they do not exist yet. Else, skip this step.
 ####getFilePaths()
 Parse filepaths for each file necessary. Return full paths for further use.
