@@ -1,6 +1,7 @@
 # Introduction
 
 This program takes a set of data and combines & cleans it for futher analysis. The original data and further documentation about the variables can be found from: http://archive.ics.uci.edu/ml/datasets/Human+Activity+Recognition+Using+Smartphones
+
 The files used in this analysis are:
 * UCI HAR Dataset/activity_labels.txt
 * UCI HAR Dataset/features.txt
