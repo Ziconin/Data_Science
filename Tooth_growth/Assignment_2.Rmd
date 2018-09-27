@@ -1,0 +1,118 @@
+---
+title: 'Part 2: Basic Inferential Data Analysis'
+author: Antti Herala
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+For the second part of this assignment, some hypothesis testing is done with the ToothGrowth-dataset from R. The whole assignment is described in the first part of these reports.
+```{r}
+data("ToothGrowth")
+str(ToothGrowth)
+summary(ToothGrowth)
+```
+
+As can be seen, the str()-function shows that the dataset has three columns: len, supp, and dose. From the documentation (URL: https://stat.ethz.ch/R-manual/R-devel/library/datasets/html/ToothGrowth.html) len means Tooth length, supp means Supplement type or delivery method, and dose is the Dose in milligrams of vitamin C per day.
+
+The summary shows, that the tooth length varies between around 4 and 34,  with a mean and median around 19. There are two types of delivery methods, orange juice (OJ) and Ascorbic acid (VC) and both have the length of 30. The dose has three levels despite being a numeric: 0.5, 1, and 2 milligrams per day, evident from summary but also can be seen from the documentation.
+
+To get some idea, what should be hypothized from the data, a boxplot is drawn (Figure in the Appendix). 
+
+```{r, echo=FALSE}
+dose_low <- subset(ToothGrowth, ToothGrowth$dose == 0.5)
+dose_mid <- subset(ToothGrowth, ToothGrowth$dose == 1)
+dose_high <- subset(ToothGrowth, ToothGrowth$dose == 2)
+
+dose_low_oj <- subset(dose_low, dose_low$supp == "OJ")
+dose_low_vc <- subset(dose_low, dose_low$supp == "VC")
+
+dose_mid_oj <- subset(dose_mid, dose_mid$supp == "OJ")
+dose_mid_vc <- subset(dose_mid, dose_mid$supp == "VC")
+
+dose_high_oj <- subset(dose_high, dose_high$supp == "OJ")
+dose_high_vc <- subset(dose_high, dose_high$supp == "VC")
+```
+
+This boxplot offers two distinguished features: there seems to be differences in tooth length based on the dose, but also based on the supplement type. These aspects need to be further looked at.
+
+First, the issue of supplement type affecting tooth length. The rejection region is set to .95/the p-value at .05.
+
+H0 = Tooth length and supplement type do not correlate
+
+First the t-test for supp affecting len...
+
+```{r}
+t.test(len~supp, data=ToothGrowth)
+```
+
+...shows that 0 is within the confidence interval and the p-value  (0.06) is larger than the .05 that was set. This test would suggest, that the null hypothesis is accepted, and the delivery method does not correlate with tooth length. 
+
+Next, the correlation between the tooth growth and the dose of vitamin C is calculated. First, it is necessary to do some transformation to the data in order to allow more suitable structure for the tests. First the data is subsetted based on their dosages, and afterwards further subsetted by the supplement type. Data transformations are done in the Appendix.
+
+To test, whether or not the tooth growth correlates with the dose, it is necessary to hypothesize, if the dose of vitamin C affects tooth growth. This can be done with the smallest dosage, since if the smallest dose correlates, larger doses correlate as well. Again, p-value is set at .05.
+
+H0 = Tooth length and giving vitamin C do not correlate
+
+```{r}
+t.test(dose_low$len, dose_low$dose)
+```
+
+As can be seen, the p-value is significantly lower than .05, and the confidence interval is always positive and does not contain 0. This would suggest, that H0 has to be rejected, giving that vitamin C affects the tooth growth.
+
+As for the final part, it is necessary to calculate, whether or not the amount of vitamin C is affected by the supplement type. In other words, does one supplement type allow better tooth grow with a specific dose. p-value is set to .05.
+
+H0 = Supplement type does not correlate with dosage (0.5 mg/day)
+
+```{r}
+t.test(dose_low_oj$len, dose_low_vc$len)
+```
+
+With the 95% confidence interval, the p-value is significantly lower than .05, which would suggest that H0 has to be rejected and the supplement type affects tooth growth, when dosage is 0.5 mg/day.
+
+When the dose is 1 mg/day, the hypotheses are:
+
+H0 = Supplement type does not correlate with dosage (1 mg/day)
+
+```{r}
+t.test(dose_mid_oj$len, dose_mid_vc$len)
+```
+
+Again, the t-test yields a significantly small p-value than was set, which suggests that H0 has to be rejected and the supplement type affects tooth growth when the dose of vitamin C is 1 mg/day.
+
+Finally, for the large dose (2mg/day), the hypotheses are:
+
+H0 = Supplement type does not correlate with dosage (2 mg/day)
+
+```{r}
+t.test(dose_high_oj$len, dose_high_vc$len)
+```
+
+Here, the p-value is significantly higher than .05, actually going closer to 1. This means that H0 can be accepted and the supplement type does not affect tooth growth, when the dosage is 2 mg/day.
+
+While using t-test, there are two conditions that have to be met:
+(1) There must be random sampling/assignment and (2) observations must come from a normal or nearly-normal distribution. If these conditions are met, then the following conlcusions can be drawn.
+
+To conclude, the results in this sample would suggest, that the supplement type does not affect tooth growth by itself, while giving vitamin C does. It was also noticed, that the supplement type affects tooth growth, when the dose of vitamin C is less or equal to 1 mg per day, but with larger dosage (2 mg/day in this sample) it does not have an effect.
+
+##Appendix
+```{r}
+boxplot(len ~ supp*dose, data=ToothGrowth)
+```
+
+```{r, eval=FALSE}
+dose_low <- subset(ToothGrowth, ToothGrowth$dose == 0.5)
+dose_mid <- subset(ToothGrowth, ToothGrowth$dose == 1)
+dose_high <- subset(ToothGrowth, ToothGrowth$dose == 2)
+
+dose_low_oj <- subset(dose_low, dose_low$supp == "OJ")
+dose_low_vc <- subset(dose_low, dose_low$supp == "VC")
+
+dose_mid_oj <- subset(dose_mid, dose_mid$supp == "OJ")
+dose_mid_vc <- subset(dose_mid, dose_mid$supp == "VC")
+
+dose_high_oj <- subset(dose_high, dose_high$supp == "OJ")
+dose_high_vc <- subset(dose_high, dose_high$supp == "VC")
+```

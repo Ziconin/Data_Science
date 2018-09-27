@@ -1,0 +1,106 @@
+---
+title: "Part 1: Simulation Exercise"
+author: "Antti Herala"
+output:
+  pdf_document: default
+  html_document: default
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+In this report, the course about statistical inference is summarized in two parts. First, there is a simulation exercise, where the exponential distribution is simulated and compared to the theoretical values. In the second part, some basic hypothesis testing is done using the dataset ToothGrowth. This document discusses about the first part, and part 2 is a separate report. *Note: Code for figures are presented in the Appendix.*
+
+Before the simulation, the constants are set, as well as the seed for replicability. Seed is set to 0, and three constant are set lambda for exponential distribution to 0.2, number of simulations to 1000, and sample size n to 40. 
+
+```{r}
+set.seed(0)
+lambda <- 0.2
+nosim <- 1000
+n <- 40
+```
+
+For data generation, an additional helper-function was done called generate(). It is used to generate enough data for the simulation. 
+
+```{r}
+generate <- function(iter, avgs, lambda) {
+	mns = NULL
+	for(i in 1:iter) {mns = c(mns, mean(rexp(avgs, lambda)))}
+	mns
+}
+```
+
+To get some idea about the generated data, the means are calculated. Theoretical mean was given beforehand, and the sample mean is calculated with the mean()-function.
+
+```{r}
+data <- generate(nosim, n, lambda)
+mu <- 1/lambda
+X <- mean(data)
+print(mu); print(X)
+```
+
+As it can be seen, the sample mean is relatively close to the theoretical mean. 
+
+Next, the variances are compared. The theoretical variance is calculated using the standard deviation, that is 1/lambda (equal to the mean) for exponential distribution. The variance of the simulated data was estimated using the var()-function available in R.
+
+```{r}
+sigma <- 1/lambda
+var_pop <- sigma^2/n #theoretical variance
+var_s <- var(data) #sample variance
+print(var_pop); print(var_s)
+```
+
+Even the variance of the sample is somewhat close to the theoretical value. Because the sample data so closely resembles the population, it is possible to question, if this distribution could be close to a normal distribution.
+
+To highlight the relation to normal distribution, a histogram is drawn, and a normally distributed curve with mean of 1/lambda and sd of 1/lambda/sqrt(n) is added. The sample curve is compared to this theoretical curve.
+
+```{r fig2, echo = FALSE}
+hist(data,
+	breaks=75,
+	prob=TRUE,
+	main="Exponential Distibutions, Population and Sample Values",
+	xlab="Distribution"
+)
+lines(density(data), lwd=2, col="red")
+xfit <- seq(min(data), max(data), length = 100)
+yfit <- dnorm(xfit, mean = 1/lambda, sd = (1/lambda/sqrt(n)))	
+lines(xfit, yfit, lwd=3, col="green", lty=5)
+legend("topright", 
+	c("ND Values", "Sample Values"),
+	lty=c(5,1),
+	col = c("green", "red")
+)
+```
+
+The sample curve is already a good approximation of a normal distribution curve, when there are 1000 simulations. If the sample distribution is normal distributed, increasing the number of simulations should push the sample curve even closer to the normal distribution curve. The sample size is increased from 1000 to 100000 and the same histogram is drawn. If the distribution is normal, the sample curve and the normal distribution curve should be even closer to each other than in the previous histogram.
+
+```{r fig3, echo=FALSE}
+data <- generate(100000, n, lambda)
+
+hist(data,
+	breaks=75,
+	prob=TRUE,
+	main="Exponential Distibutions, Population and Sample Values",
+	xlab="Distribution"
+)
+lines(density(data), lwd=2, col="red")
+xfit <- seq(min(data), max(data), length = 100)
+yfit <- dnorm(xfit, mean = 1/lambda, sd = (1/lambda/sqrt(n)))	
+lines(xfit, yfit, lwd=3, col="green", lty=5)
+legend("topright", 
+	c("ND Values", "Sample Values"),
+	lty=c(5,1),
+	col = c("green", "red")
+)
+```
+
+These attributes of the samples would suggest, that the distribution is approximately normal and the distribution follows the CLT. 
+
+##Appendix
+
+```{r, ref.label="fig2", eval = FALSE}
+```
+
+```{r, ref.label="fig3", eval = FALSE}
+```
